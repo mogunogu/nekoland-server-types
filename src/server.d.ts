@@ -1,7 +1,8 @@
 /** @noSelfInFile */
 
-
-
+/// <reference path="./callbacks.d.ts" />
+/// <reference path="./interfaces.d.ts" />
+/// <reference path="./network.d.ts" />
 
 
 declare namespace ServerScript {
