@@ -1,0 +1,19 @@
+{
+  "name": "@types/nekoland-server-types",
+  "version": "0.0.1",
+  "description": "Typescript declarations for the nekoland lua script",
+  "main": "src/index.d.ts",
+  "author": "kumaya",
+  "license": "MIT",
+  "scripts": {
+    "lint": "tslint -c tslint.json 'src/**/*.d.ts'",
+    "build": "tsc -p tsconfig.json",
+    "validate": "yarn run build && yarn run lint"
+  },
+  "devDependencies": {
+    
+  },
+  "files": [
+    "**/*.d.ts"
+  ]
+}
