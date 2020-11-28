@@ -1,8 +1,8 @@
-/** @noSelfInFile */
-
 /// <reference path="./callbacks.d.ts" />
 /// <reference path="./interfaces.d.ts" />
 /// <reference path="./network.d.ts" />
+/// <reference path="./types.d.ts" />
+
 
 
 declare namespace ServerScript {
@@ -24,74 +24,234 @@ declare namespace ServerScript {
     */
     interface ScriptServer {
 
-
         /**
-         * 
+         * 클랜이 생성되었을 때의 콜백 함수입니다
          */
         createClan: CreateClanCallback
         
         /**
-         * 
+         * 유닛의 데미지 계산 공식 콜백 함수입니다 (데미지 공식을 커스텀 할 수 있습니다)
          */
         damageCallback: DamageCallback
 
         /**
-         * 
+         * 현재 게임에 생성된 모든 맵(필드)를 가져옵니다
          */
         readonly fields: ServerScript.ScriptField[]
 
+        /**
+         * 플레이어가 말했을 때의 콜백 함수입니다
+         */
         sayCallback: SayCallback
 
+        /**
+        * 아이템이 추가되었을 때 호출되는 이벤트입니다
+        * @noSelf
+        */
         onAddItem: onAddItem
 
+        /**
+        * 유닛이 골드(게임 머니)로 아이템을 샀을 때 호출되는 이벤트입니다
+        * @noSelf
+        */
         onBuyGameMoneyItem: onBuyGameMoneyItem
 
+        /**
+        * 다른 상태 실행 시에 기존 상태가 종료되며 호출되는 이벤트입니다
+        * @noSelf
+        */
         onEndState: onEndState
 
+        /**
+        * 게임에 플레이어가 들어왔을 때 호출되는 이벤트입니다
+        * @noSelf
+        */
         onJoinPlayer: onJoinPlayer
 
+        /**
+        * 플레이어가 게임을 나갔을 때 호출되는 이벤트입니다
+        * @noSelf
+        */
         onLeavePlayer: onLeavePlayer
 
+        /**
+        * 펫 유닛의 레벨이 올랐을 때 호출되는 이벤트입니다
+        * @noSelf
+        */
         onPetUnitLevelUp: onPetUnitLevelUp
 
+        /**
+        * 유닛이 스탯을 갱신했을 때 호출되는 이벤트입니다
+        * @noSelf
+        */
         onRefreshStats: onRefreshStats
 
-        // onRemoveItem: onRemoveItem
+        /**
+        * 아이템이 제거되었을 때 호출되는 이벤트입니다
+        * @noSelf
+        */
+        onRemoveItem: onRemoveItem
 
+        /**
+        * 플레이어가 말했을 때 호출되는 이벤트입니다
+        * @noSelf
+        */
         onSay: onSay
 
-        // onSellGameMoneyItem: onSellGameMoneyItem
+        /**
+        * 유닛이 골드(게임 머니) 아이템을 상점에 팔았을 때 호출되는 이벤트입니다
+        * @noSelf
+        */
+        onSellGameMoneyItem: onSellGameMoneyItem
 
-        // onStartState: onStartState
+        /**
+        * Server.StartState()로 특정 상태를 실행했을 때 호출되는 이벤트입니다
+        * @noSelf
+        */
+        onStartState: onStartState
 
-        // onTick: onTick
+        /**
+        * 매 프레임마다 호출되는 이벤트입니다
+        * @noSelf
+        */
+        onTick: onTick
 
-        // onTradeDone: onTradeDone
+        /**
+        * 거래가 정상적으로 완료되었을 때 호출되는 이벤트입니다
+        * @noSelf
+        */
+        onTradeDone: onTradeDone
 
-        // onUnitDead: onUnitDead
+        /**
+        * 유닛이 죽었을 때 호출되는 이벤트입니다
+        * @noSelf
+        */
+        onUnitDead: onUnitDead
 
-        // onUnitLevelUp: onUnitLevelUp
+        /**
+        * 유닛의 레벨이 올랐을 때 호출되는 이벤트입니다
+        * @noSelf
+        */
+        onUnitLevelUp: onUnitLevelUp
 
-        // onUseItem: onUseItem
+        /**
+        * 유닛이 아이템을 사용했을 때 호출되는 이벤트입니다
+        * @noSelf
+        */
+        onUseItem: onUseItem
 
-        // playerJoinPartyCallback: PlayerJoinPartyCallback
+        /**
+        * 유닛이 파티에 참가할 때 호출되는 콜백 함수입니다
+        */
+        playerJoinPartyCallback: PlayerJoinPartyCallback
 
-        // playerLeavePartyCallback: PlayerLeavePartyCallback
+        /**
+        * 유닛이 파티에서 나갈 때 호출되는 콜백 함수입니다
+        */
+        playerLeavePartyCallback: PlayerLeavePartyCallback
 
-        players: ServerScript.ScriptRoomPlayer
+        /**
+        * 현재 게임에 접속해 있는 플레이어 목록
+        */ 
+        players: ServerScript.ScriptRoomPlayer[]
 
+        /**
+        * 몬스터가 죽었을 때의 커스텀 보상 콜백 함수입니다
+        */
+        rewardCallback: RewardCallback
+
+
+        /**
+         * 
+         * @param dataID 아이템의 데이터 ID
+         * @param count 갯수
+         * @param [level] 아이템 레벨 (기본: 0)
+         */
+        CreateDropItem(dataID: number, count: number, level?: number): void
+
+
+        /**
+         * 특정 맵 ID의 필드를 임시로 생성합니다
+         * @param mapID 생성할 맵 데이터 ID
+         * @returns field 생성된 필드 객체
+         */
+        CreateField(mapID: number): ServerScript.ScriptField
+
+
+        CreateItem
+
+        CreateParty
+
+        ExportAverage
+
+        FireEvent
+
+        GetAnimation
+
+        GetBuff
+
+        GetCharacter
+
+        GetCommonEvent
+
+        GetField
+
+        GetItem
+
+
+        GetJob
+
+        GetMap
+
+        GetMonster
+
+        GetMonsterAI
+
+        GetPetAI
+
+        GetSkill
+
+        GetStrings
+
+        GetTileset
+
+
+        GetTopic(topic: string) : onGetTopic
+
+        GetWorldStringVar
+
+        GetWorldVar
+
+        HttpGet
+
+
+        /**
+         * 
+         * @param url 
+         * @param data 
+         * @param func 
+         */
         HttpPost(url: string, data: object, func: (response: string) => void): void
 
         RunLater(func: () => void, time: number): void
 
-
-        GetTopic(topic: string) : onGetTopic
+        SendCenterLabel
 
 
         /**
         * 채팅창에 메세지를 표시합니다
         */
         SendSay (text: string, color?: number): void
+
+        SetMonsterAI(id: number, func: (monster: ServerScript.ScriptUnit, ai: ScriptEnemyUnitAI, event: AiEvent, data: object) => void): void
+
+        SetPetAI(id: number, func: (pet: ServerScript.ScriptUnit, ai: ScriptPetUnitAI, event: AiEvent, data: object) => void): void
+
+        SetWorldStringVar(id: number, value: string): void
+
+        SetWorldVar(id: number, value: number): void
+
+        StartState(state: number, time?: number): void
 
     }
 
@@ -128,6 +288,7 @@ declare namespace ServerScript {
 
     /**
     * 루아 스크립트 상의 함수를 이벤트 등록에 사용 가능하게 해주는 클래스입니다
+    * @noSelf
     */
     interface ScriptEventPublisher {
         /**
@@ -211,13 +372,13 @@ declare namespace ServerScript {
     */
     interface onPetUnitLevelUp extends ScriptEventPublisher {
         /**
-        * 이 이벤트가 발생했을 때, 호출할 루아 함수를 등록합니다
+        * 펫 유닛의 레벨이 올랐을 때 호출되는 이벤트입니다.
         */
         Add(func: (pet: ServerScript.ScriptUnit, level: number) => void): void
     }
 
     /**
-    * 펫 유닛의 레벨이 올랐을 때 호출되는 이벤트입니다.
+    * 유닛이 스탯을 갱신했을 때 호출되는 이벤트입니다
     */
     interface onRefreshStats extends ScriptEventPublisher {
         /**
@@ -227,6 +388,100 @@ declare namespace ServerScript {
         Add(func: (unit: ServerScript.ScriptUnit) => void): void
     }
 
+    /**
+    * 아이템이 제거되었을 때 호출되는 이벤트입니다
+    */
+    interface onRemoveItem extends ScriptEventPublisher {
+        /**
+        * 아이템이 제거되었을 때 호출되는 이벤트입니다
+        * unit: 아이템이 제거된 유닛
+        * [2] item: 제거된 아이템
+        */
+        Add(func: (unit: ServerScript.ScriptUnit, titem: network.TItem) => void): void
+    }
+
+    /**
+    * 유닛이 골드(게임 머니) 아이템을 상점에 팔았을 때 호출되는 이벤트입니다
+    */
+    interface onSellGameMoneyItem extends ScriptEventPublisher {
+        /**
+        * 유닛이 골드(게임 머니) 아이템을 상점에 팔았을 때 호출되는 이벤트입니다
+        * [1] unit: 아이템이 제거된 유닛
+        * [2] item: 제거된 아이템
+        */
+        Add(func: (unit: ServerScript.ScriptUnit, titem: network.TItem) => void): void
+    }
+
+    /**
+    * Server.StartState()로 특정 상태를 실행했을 때 호출되는 이벤트입니다
+    */
+    interface onStartState extends ScriptEventPublisher {
+        /**
+        * Server.StartState()로 특정 상태를 실행했을 때 호출되는 이벤트입니다
+        * [1] state: 해당 State 번호
+        */
+        Add(func: (state: number) => void): void
+    }
+
+    /**
+    * 매 프레임마다 호출되는 이벤트입니다
+    */
+    interface onTick extends ScriptEventPublisher {
+        /**
+        * 매 프레임마다 호출되는 이벤트입니다
+        * [1] dt: Delta time
+        */
+        Add(func: (dt: DeltaTime) => void): void
+    }
+
+    /**
+    * 거래가 정상적으로 완료되었을 때 호출되는 이벤트입니다
+    */
+    interface onTradeDone extends ScriptEventPublisher {
+        /**
+        * 거래가 정상적으로 완료되었을 때 호출되는 이벤트입니다
+        * [1] sender: 거래를 시작한 유닛
+        * [2] receiver: 거래를 받은 유닛
+        * [3] senderItems: 거래를 시작한 유닛이 보낸 아이템 정보 테이블 (TItem)
+        * [4] receiverItems: 거래를 받은 유닛이 보낸 아이템 정보 테이블 (TItem)
+        */
+        Add(func: (sender: ServerScript.ScriptUnit, receiver: ServerScript.ScriptUnit, snederItems: network.TItem, receiverItems: network.TItem) => void): void
+    }
+
+    /**
+    * 유닛이 죽었을 때 호출되는 이벤트입니다
+    */
+    interface onUnitDead extends ScriptEventPublisher {
+        /**
+        * 유닛이 죽었을 때 호출되는 이벤트입니다
+        * [1] target: 죽은 유닛 객체
+        * [2] attacker: 공격한 유닛 객체 (nil 이면 자살)
+        */
+        Add(func: (target: ServerScript.ScriptUnit, attacker: ServerScript.ScriptUnit | undefined) => void): void
+    }
+
+    /**
+    * 유닛의 레벨이 올랐을 때 호출되는 이벤트입니다
+    */
+    interface onUnitLevelUp extends ScriptEventPublisher {
+        /**
+        * 유닛의 레벨이 올랐을 때 호출되는 이벤트입니다
+        * [1] unit: 레벨업한 대상 유닛 객체
+        */
+        Add(func: (target: ServerScript.ScriptUnit, attacker: ServerScript.ScriptUnit | undefined) => void): void
+    }
+
+    /**
+    * 유닛이 아이템을 사용했을 때 호출되는 이벤트입니다
+    */
+    interface onUseItem extends ScriptEventPublisher {
+        /**
+        * 유닛이 아이템을 사용했을 때 호출되는 이벤트입니다
+        * [1] unit: 레벨업한 대상 유닛 객체
+        * [2] item: 사용한 아이템
+        */
+        Add(func: (target: ServerScript.ScriptUnit, item: network.TItem) => void): void
+    }
 
     /**
      * 하나의 유닛에 대응하는 클래스입니다. 유닛의 정보를 가져오거나 설정할 수 있습니다
@@ -418,7 +673,27 @@ declare namespace ServerScript {
         units: Array<ScriptUnit | null>
     }
 
+    /**
+     * 한 파티에 대응하는 클래스입니다. 해당 파티의 정보를 얻거나 파티를 조작할 때 사용합니다
+     */
+     interface ScriptParty {
 
+    }
+
+    /**
+     * 
+     */
+     interface ScriptPetUnitAI {
+
+    }
+
+    /**
+     * 
+     */
+     interface ScriptEnemyUnitAI {
+
+    }
+    
 }
 
 
