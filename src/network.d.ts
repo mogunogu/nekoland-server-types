@@ -84,4 +84,88 @@ declare namespace network {
 
     }
 
+    /**
+     * 데이터베이스 애니매이션 정보
+    */
+    interface TGameAnimation {
+
+
+
+    }
+
+    /**
+     * 데이터베이스 버프정보
+    */
+    interface TGameBuff {
+
+    }
+
+    /**
+     * 데이터베이스 케릭터정보
+    */
+    interface TGameCharacter {
+
+    }
+
+    /**
+     * 데이터베이스 공용이벤트 정보
+    */
+    interface TGameCommonEvent {
+
+    }
+
+    /**
+     * 데이터베이스 아이템정보
+    */
+    interface TGameItem {
+
+    }
+
+    /**
+     * 데이터베이스 직업정보
+    */
+    interface TGameItem {
+
+    }
+
+    /**
+     * 데이터베이스 직업정보
+    */
+    interface TGameJob {
+
+    }
+
+    /**
+     * 데이터베이스 맵정보
+    */
+    interface TGameMapStub {
+
+    }
+
+    /**
+     * 데이터베이스 몬스터정보
+    */
+    interface TGameMonster {
+
+    }
+
+    /**
+     * 데이터베이스 스킬정보
+    */
+    interface TGameSkill {
+
+    }
+    /**
+     * 데이터베이스 시스템용어정보
+    */
+    interface TGameStrings {
+
+    }
+
+    /**
+     * 데이터베이스 타일셋정보
+    */
+    interface TGameTileset {
+
+}
 }

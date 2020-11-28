@@ -176,54 +176,156 @@ declare namespace ServerScript {
          * @returns field 생성된 필드 객체
          */
         CreateField(mapID: number): ServerScript.ScriptField
+        
+        /**
+         * 아이템을 생성합니다
+         * @param dataID 아이템 ID (데이터베이스)
+         * @param count 갯수
+         * @returns item 아이템
+         */
+        CreateItem(dataID: number, count: number): network.TItem
 
+        /**
+         * 파티를 생성합니다
+         * @param [name] 파티 이름
+         * @param [maxPlayer] 파티의 최대 플레이어 수 (최대: 4)
+         * @returns party 파티 정보 객체
+         */
+        CreateParty(name?: string, maxPlayer?: number): ServerScript.ScriptParty
 
-        CreateItem
+        /**
+         * 스크립트의 작동 시간을 측정합니다.
+         * 출력 경로는 해당 프로젝트 폴더/ScriptPlayTimeAverage.txt 의 이름으로 나옵니다.
+         * 테스트 플레이에서만 사용 가능합니다.
+         */
+        ExportAverage (): void
 
-        CreateParty
+        /**
+         * 데이터베이스의 애니메이션 정보를 가져옵니다
+         * @param id 
+         * @returns animation 
+         */
+        GetAnimation(id: number): network.TGameAnimation
 
-        ExportAverage
+        /**
+         * 데이터베이스의 상태(버프) 정보를 가져옵니다
+         * @param id 애니메이션 ID
+         * @returns buff 
+         */
+        GetBuff(id: number): network.TGameBuff
 
-        FireEvent
+        /**
+         * 
+         * @param id 
+         * @returns character 
+         */
+        GetCharacter(id: number): network.TGameCharacter 
 
-        GetAnimation
+        /**
+         * 
+         * @param id 
+         * @returns common event 
+         */
+        GetCommonEvent(id: number): network.TGameCommonEvent
 
-        GetBuff
+        /**
+         * 
+         * @param mapID 
+         * @param [channelID] 
+         * @returns field 
+         */
+        GetField(mapID: number, channelID?: number): ServerScript.ScriptField
 
-        GetCharacter
+        /**
+         * 
+         * @param id 
+         * @returns item 
+         */
+        GetItem(id: number): network.TGameItem
 
-        GetCommonEvent
+        /**
+         * 
+         * @param id 
+         * @returns job 
+         */
+        GetJob(id: number): network.TGameJob
 
-        GetField
+        /**
+         * 
+         * @param id 
+         * @returns map 
+         */
+        GetMap(id: number): network.TGameMapStub
 
-        GetItem
+        /**
+         * 
+         * @param id 
+         * @returns monster 
+         */
+        GetMonster(id: number): network.TGameMonster
 
+        /**
+         * 
+         * @param id 
+         * @returns monster ai 
+         */
+        GetMonsterAI(id: number): (monster: ServerScript.ScriptUnit, ai: ScriptEnemyUnitAI, event: AiEvent, data: object) => void
 
-        GetJob
+        /**
+         * 
+         * @param id 
+         * @returns pet ai 
+         */
+        GetPetAI(id: number): (pet: ServerScript.ScriptUnit, ai: ScriptPetUnitAI, event: AiEvent, data: object) => void
 
-        GetMap
+        /**
+         * 
+         * @param id 
+         * @returns skill 
+         */
+        GetSkill(id: number): network.TGameSkill
 
-        GetMonster
+        /**
+         * 
+         * @param id 
+         * @returns strings 
+         */
+        GetStrings(id: number): network.TGameStrings
 
-        GetMonsterAI
+        /**
+         * 
+         * @param id 
+         * @returns tileset 
+         */
+        GetTileset(id: number): network.TGameTileset
 
-        GetPetAI
-
-        GetSkill
-
-        GetStrings
-
-        GetTileset
-
-
+        /**
+         * 
+         * @param topic 
+         * @returns topic 
+         */
         GetTopic(topic: string) : onGetTopic
 
-        GetWorldStringVar
+        /**
+         * 
+         * @param id 
+         * @returns world string var 
+         */
+        GetWorldStringVar(id: number): string
 
-        GetWorldVar
+        /**
+         * 
+         * @param id 
+         * @returns world var 
+         */
+        GetWorldVar(id: number): number
 
-        HttpGet
-
+        /**
+         * 
+         * @param url 
+         * @param func 
+         */
+        HttpGet(url: string, func: (response: string) => void): void
 
         /**
          * 
@@ -233,24 +335,60 @@ declare namespace ServerScript {
          */
         HttpPost(url: string, data: object, func: (response: string) => void): void
 
+        /**
+         * 
+         * @param func 
+         * @param time 
+         */
         RunLater(func: () => void, time: number): void
 
-        SendCenterLabel
+        /**
+         * 가운데에 문자열을 표시합니다
+         * @param text 센터 라벨을 표시합니다
+         */
+        SendCenterLabel(text: string): void
 
 
         /**
-        * 채팅창에 메세지를 표시합니다
-        */
+         * 채팅창에 메세지를 표시합니다
+         * @param text 표시할 텍스트
+         * @param [color] 색
+         */
         SendSay (text: string, color?: number): void
 
+        /**
+         * 몬스터의 AI를 등록합니다
+         * @param id AI를 적용할 대상 몬스터의 데이터 ID
+         * @param func AI 로직 함수
+         */
         SetMonsterAI(id: number, func: (monster: ServerScript.ScriptUnit, ai: ScriptEnemyUnitAI, event: AiEvent, data: object) => void): void
 
+        /**
+         * 특정 캐릭터로 등록된 펫에 적용되는 AI를 등록합니다
+         * @param id AI를 적용할 펫의 캐릭터 I
+         * @param func AI 로직 함
+         */
         SetPetAI(id: number, func: (pet: ServerScript.ScriptUnit, ai: ScriptPetUnitAI, event: AiEvent, data: object) => void): void
 
+        /**
+         * 월드 변수 값을 설정합니다 (문자열 형식)
+         * @param id 변수 ID
+         * @param value 변수값 (문자열 형식)
+         */
         SetWorldStringVar(id: number, value: string): void
 
+        /**
+         * 월드 변수 값을 설정합니다
+         * @param id 변수 ID
+         * @param value 변수값
+         */
         SetWorldVar(id: number, value: number): void
 
+        /**
+         * 정해진 시간 후에 특정한 State를 실행합니다.
+         * @param state 실행할 State
+         * @param [time] 실행 시간
+         */
         StartState(state: number, time?: number): void
 
     }
@@ -695,6 +833,5 @@ declare namespace ServerScript {
     }
     
 }
-
 
 
