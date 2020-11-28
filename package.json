@@ -1,6 +1,6 @@
 {
   "name": "@kumaya1109/nekoland-server-types",
-  "version": "0.0.3",
+  "version": "0.0.8",
   "description": "Typescript declarations for the nekoland lua script",
   "main": "src/index.d.ts",
   "author": "kumaya1109",
@@ -17,5 +17,6 @@
   },
   "files": [
     "**/*.d.ts"
-  ]
+  ],
+  "dependencies": {}
 }

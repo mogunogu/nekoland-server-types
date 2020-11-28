@@ -1,4 +1,4 @@
-
+/** @noSelfInFile **/
 
 declare namespace network {
 
@@ -167,5 +167,14 @@ declare namespace network {
     */
     interface TGameTileset {
 
-}
+    }
+
+    
+    /**
+     * 데이터베이스 몬스터정보
+    */
+    interface TGameMonster {
+
+    }
+
 }

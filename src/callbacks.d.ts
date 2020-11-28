@@ -1,6 +1,4 @@
-
-
-
+/** @noSelfInFile **/
 
 declare interface SayCallback {
     /**
@@ -29,7 +27,7 @@ declare interface DamageCallback {
     [5] critical: 크리티컬 여부
     [6] visible: 피격 데미지 표시 여부
     */
-    (attaker: ServerScript.ScriptUnit, defender: ServerScript.ScriptUnit,
+    (attaker: ServerScript.ScriptUnit, defender: ServerScript.ScriptUnit, damage: number,
         skillDataID: number, critical: boolean, visible: boolean): [number, boolean, boolean];
 }
 
