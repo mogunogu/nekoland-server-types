@@ -1,5 +1,5 @@
 {
-  "name": "@types/nekoland-server-types",
+  "name": "@kumaya1109/nekoland-server-types",
   "version": "0.0.1",
   "description": "Typescript declarations for the nekoland lua script",
   "main": "src/index.d.ts",

@@ -24,16 +24,65 @@ declare namespace ServerScript {
     */
     interface ScriptServer {
 
-        onAddItem: onAddItem
+
+        /**
+         * 
+         */
+        createClan: CreateClanCallback
         
-        damageCallback: damageCallbackFunction
+        /**
+         * 
+         */
+        damageCallback: DamageCallback
 
-        sayCallback: sayCallback
+        /**
+         * 
+         */
+        readonly fields: ServerScript.ScriptField[]
 
+        sayCallback: SayCallback
 
-        HttpPost(url: string, data: object, func: httpCallbackFunction): void
+        onAddItem: onAddItem
 
-        RunLater(func: Function, time: number): void
+        onBuyGameMoneyItem: onBuyGameMoneyItem
+
+        onEndState: onEndState
+
+        onJoinPlayer: onJoinPlayer
+
+        onLeavePlayer: onLeavePlayer
+
+        onPetUnitLevelUp: onPetUnitLevelUp
+
+        onRefreshStats: onRefreshStats
+
+        // onRemoveItem: onRemoveItem
+
+        onSay: onSay
+
+        // onSellGameMoneyItem: onSellGameMoneyItem
+
+        // onStartState: onStartState
+
+        // onTick: onTick
+
+        // onTradeDone: onTradeDone
+
+        // onUnitDead: onUnitDead
+
+        // onUnitLevelUp: onUnitLevelUp
+
+        // onUseItem: onUseItem
+
+        // playerJoinPartyCallback: PlayerJoinPartyCallback
+
+        // playerLeavePartyCallback: PlayerLeavePartyCallback
+
+        players: ServerScript.ScriptRoomPlayer
+
+        HttpPost(url: string, data: object, func: (response: string) => void): void
+
+        RunLater(func: () => void, time: number): void
 
 
         GetTopic(topic: string) : onGetTopic
@@ -94,7 +143,7 @@ declare namespace ServerScript {
         /**
         * 이 이벤트가 발생했을 때, 호출할 루아 함수를 등록합니다
         */
-        Add(func: onAddItemFunction): void
+        Add(func: (unit:ServerScript.ScriptUnit, titem: network.TItem)=> void): void
     }
 
     /**
@@ -104,18 +153,79 @@ declare namespace ServerScript {
         /**
         * 이 이벤트가 발생했을 때, 호출할 루아 함수를 등록합니다
         */
-        Add(func: onSayCallbackFunction): void
+        Add(func: (unit:ServerScript.ScriptUnit, text: string) => void): void
     }
     
     /**
     * 클라이언트로부터 메세지를 받았을때의 이벤트입니다
     */
-   interface onGetTopic extends ScriptEventPublisher {
+    interface onGetTopic extends ScriptEventPublisher {
+        /**
+        * 이 이벤트가 발생했을 때, 호출할 루아 함수를 등록합니다
+        */
+        Add(func: (...args: (string | number)[]) => void): void
+    }
+
     /**
-    * 이 이벤트가 발생했을 때, 호출할 루아 함수를 등록합니다
+    * 유닛이 골드(게임 머니)로 아이템을 샀을 때 호출되는 이벤트입니다
     */
-    Add(func: onGetTopicFunction): void
-}
+    interface onBuyGameMoneyItem extends ScriptEventPublisher {
+        /**
+        * 이 이벤트가 발생했을 때, 호출할 루아 함수를 등록합니다
+        */
+        Add(func: (unit: ServerScript.ScriptUnit, itemID: number, count: number) => void): void
+    }
+
+    /**
+    * 다른 상태 실행 시에 기존 상태가 종료되며 호출되는 이벤트입니다
+    */
+    interface onEndState extends ScriptEventPublisher {
+        /**
+        * 이 이벤트가 발생했을 때, 호출할 루아 함수를 등록합니다
+        */
+        Add(func: (state: number) => void): void
+    }
+
+    /**
+    * 게임에 플레이어가 들어왔을 때 호출되는 이벤트입니다
+    */
+    interface onJoinPlayer extends ScriptEventPublisher {
+        /**
+        * 이 이벤트가 발생했을 때, 호출할 루아 함수를 등록합니다
+        */
+        Add(func: (player: ServerScript.ScriptRoomPlayer) => void): void
+    }
+
+    /**
+    * 플레이어가 게임을 나갔을 때 호출되는 이벤트입니다
+    */
+    interface onLeavePlayer extends ScriptEventPublisher {
+        /**
+        * 이 이벤트가 발생했을 때, 호출할 루아 함수를 등록합니다
+        */
+        Add(func: (player: ServerScript.ScriptRoomPlayer) => void): void
+    }
+
+    /**
+    * 펫 유닛의 레벨이 올랐을 때 호출되는 이벤트입니다.
+    */
+    interface onPetUnitLevelUp extends ScriptEventPublisher {
+        /**
+        * 이 이벤트가 발생했을 때, 호출할 루아 함수를 등록합니다
+        */
+        Add(func: (pet: ServerScript.ScriptUnit, level: number) => void): void
+    }
+
+    /**
+    * 펫 유닛의 레벨이 올랐을 때 호출되는 이벤트입니다.
+    */
+    interface onRefreshStats extends ScriptEventPublisher {
+        /**
+        * 유닛이 스탯을 갱신했을 때 호출되는 이벤트입니다
+        * [1] unit: 스탯을 갱신한 유닛
+        */
+        Add(func: (unit: ServerScript.ScriptUnit) => void): void
+    }
 
 
     /**
