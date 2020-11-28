@@ -445,6 +445,10 @@ declare namespace ServerScript {
          * JSON 파일을 파싱하여 결과를 반환합니다
          */
         JSONParse(json: string): Table
+        /** 
+        * 테이블을 JSON 문자열로 변환합니다
+        */
+        JSONSerialize(json: Table): Table
 
     }
     /**
@@ -466,6 +470,51 @@ declare namespace ServerScript {
          * 플레이어 이름
          */
         name: string
+
+        /**
+         * 플레이어의 현재 누적 경험치
+         */
+        exp: number
+
+        /**
+         * 플레이어의 레벨
+         */
+        level: number
+
+        /**
+         * 현재 플레이어의 레벨까지 필요한 총 경험치 양
+         */
+        maxEXP: number
+
+        /**
+         * 플레이어가 속한 클랜 객체
+         */
+        clan: ServerScript.ScriptClan
+
+        /**
+         * 플레이어가 속한 클랜의 ID
+         */
+        clanID: number
+
+        /**
+         * 플레이어의 유닛(ScriptUnit) 객체
+         */
+        unit: ServerScript.ScriptUnit
+
+        /**
+         * 커스텀 데이터
+         */
+        customData: Table
+
+        /**
+         * 설정한 스코어 값
+         */
+        score: number
+
+        /**
+         * 팀 값 (0 ~ 3 : 1팀 ~ 4팀)
+         */
+        team: number
     }
 
     /**
