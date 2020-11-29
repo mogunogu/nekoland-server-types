@@ -176,5 +176,39 @@ declare namespace network {
     interface TGameMonster {
 
     }
+    
+    /**
+     * 데이터베이스 몬스터정보
+    */
+    interface TOnlinePetData {
+
+    }
+
+        
+    /**
+     * 스킬
+    */
+    interface Tskill {
+        
+        /**
+         * 데이터아이디
+         */
+        dataID: number
+
+        /**
+         * 이 스킬의 레벨
+         */
+        level: number
+
+        
+        /**
+         * 초기레벨
+         */
+        initLevel: number
+
+    }
+
+
+    
 
 }

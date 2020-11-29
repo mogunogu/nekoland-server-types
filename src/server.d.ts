@@ -319,7 +319,7 @@ declare namespace ServerScript {
          * @param id 
          * @returns pet ai 
          */
-        GetPetAI(id: number): (pet: ServerScript.ScriptUnit, ai: ScriptPetUnitAI, event: AiEvent, data: object) => void
+        GetPetAI(id: number): (pet: ServerScript.ScriptPetUnit, ai: ScriptPetUnitAI, event: AiEvent, data: object) => void
 
         /**
          * 데이터베이스의 스킬 정보를 가져옵니다
@@ -442,13 +442,60 @@ declare namespace ServerScript {
     */
     interface ScriptUtility {
         /**
+         * 아이템에 옵션을 추가합니다
+         * @param item 옵션을 추가할 대상 아이템 객체 (TItem)
+         * @param type 타입 값 (1: 직업 (+), 2: 직업 (%), 3: 아이템 (+), 4: 아이템 (%))
+         * @param statID 스탯 ID (NekoStats 의 값 참조)
+         * @param value 변경할 값
+         */
+        AddItemOption(item: network.TItem, type: number, statID: number, value: number): void
+
+        /**
+         * 아이템의 옵션들을 가져옵니다
+         * @param item 옵션을 가져올 대상 아이템 (TItem)
+         * @returns 옵션 배열
+         */
+        GetItemOptions(item: network.TItem): network.TItemOption[]
+
+        /**
+         * 아이템의 옵션을 삭제합니다
+         * @param item 옵션을 삭제할 대상 아이템 객체 (TItem)
+         * @param option 삭제할 옵션
+         * @returns 성공 여부
+         */
+        RemoveItemOption(item: network.TItem, option: network.TItemOption): boolean
+
+        /**
+         * 아이템의 특정 인덱스에 있는 옵션을 삭제합니다
+         * @param item 옵션을 삭제할 대상 아이템 객체 (TItem)
+         * @param index 삭제할 옵션의 인덱스
+         * @returns 성공 여부
+         */
+        RemoveItemOption(item: network.TItem, index: number): boolean
+
+        /**
+         * 
+         * @param option 아이템 옵션
+         * @param type 타입 값 (1: 직업 (+), 2: 직업 (%), 3: 아이템 (+), 4: 아이템 (%))
+         * @param statID 스탯 ID (NekoStats 의 값 참조)
+         * @param value 변경할 값
+         * @returns 옵션
+         */
+        SetItemOption(option: network.TItemOption, type: number, statID: number, value: number): network.TItemOption
+
+        /**
          * JSON 파일을 파싱하여 결과를 반환합니다
+         * @param json JSON 형식 문자열
+         * @returns JSON 형식 문자열을 기반으로 생성된 테이블
          */
         JSONParse(json: string): Table
+        
         /** 
         * 테이블을 JSON 문자열로 변환합니다
-        */
-        JSONSerialize(json: Table): Table
+         * @param t 대상 테이블
+         * @returns 테이블을 기반으로 생성된 JSON 형식 문자열 
+         */
+        JSONSerialize(t: Table): string
 
     }
     /**
@@ -502,11 +549,6 @@ declare namespace ServerScript {
         unit: ServerScript.ScriptUnit
 
         /**
-         * 커스텀 데이터
-         */
-        customData: Table
-
-        /**
          * 설정한 스코어 값
          */
         score: number
@@ -515,6 +557,57 @@ declare namespace ServerScript {
          * 팀 값 (0 ~ 3 : 1팀 ~ 4팀)
          */
         team: number
+
+        /**
+         * 플레이어의 창고에 아이템을 지급합니다
+         * @param storageID 아이템을 추가할 대상 창고 ID
+         * @param itemDataId 아이템 ID (데이터베이스)
+         * @param count 아이템 갯수
+         * @returns 아이템 지급 성공 여부 (True/False)
+         */
+        AddStorageItem(storageID: number, itemDataId: number, count: number): boolean
+
+        /**
+         * 클라이언트로 Topic에 대한 이벤트를 보냅니다
+         * @param topic 보낼 Topic
+         * @param args 함께 보낼 인자들
+         */
+        FireEvent(topic: string, ...args: any[]): void
+
+        /**
+         * 플레이어의 아이템 목록에서 ID에 맞는 아이템을 가져옵니다
+         * @param id 해당 아이템의 고유 ID
+         * @returns item 가져온 아이템
+         */
+        GetItem(id: number): network.TItem
+
+        /**
+         * 현재 플레이어가 가지고 있는 아이템들을 리스트 형식으로 반환합니다.
+         * @returns TItem 테이블 
+         */
+        GetItems(): network.TItem[]
+
+        /**
+         * 플레이어의 창고 아이템 목록을 가져옵니다
+         * @param id 불러올 창고 ID
+         * @returns 가져온 아이템 리스트 (TItem 리스트)
+         */
+        GetStorageItems(id: number): network.TItem[]
+
+        /**
+         * 플레이어의 창고에서 아이템을 제거합니다
+         * @param storageID 아이템을 제거할 대상 창고 ID
+         * @param itemDataID 아이템 ID (데이터베이스)
+         * @param count 아이템 갯수
+         * @returns 아이템 회수 성공 여부 (True/False)
+         */
+        RemoveStorageItem(storageID: number, itemDataID: number, count: number): boolean
+
+        /**
+         * 현재 유닛이 가진 아이템 정보를 갱신합니다
+         * @param item 갱신할 대상 아이템
+         */
+        SendItemUpdated(item: network.TItem): void
     }
 
     /**
@@ -1048,126 +1141,427 @@ declare namespace ServerScript {
         AddSkill(dataID?: number, level?: number, notiry?: number): void
 
 
-        // CancelPetSummon
+        /**
+         * 펫의 소환을 해제합니다
+         */
+        CancelPetSummon(): void
 
-        // ClearAllBuffs
+        /**
+         * 해당 유닛의 버프를 모두 제거합니다.
+         */
+        ClearAllBuffs(): void
 
-        // ClearBuffAnimations
+        /**
+         * 해당 유닛의 버프 애니메이션을 모두 제거합니다.
+         */
+        ClearBuffAnimations(): void
 
-        // CountItem
+        /**
+         * 유닛의 특정 아이템 소유 여부를 체크합니다 (플레이어 유닛일 경우에만 동작합니다)
+         * @param dataID 아이템 ID (데이터베이스)
+         * @returns item 아이템의 갯수 (소유하지 않았다면 0)
+         */
+        CountItem(dataID: number): number
 
-        // DropItem
+        /**
+         * 유닛이 가지고있는 아이템을 땅에 떨어뜨립니다 (플레이어 유닛일 경우에만 동작합니다)
+         * @param id 아이템의 고유 ID
+         * @param [count] 갯수
+         */
+        DropItem(id: number, count?: number): void
 
-        // DropItemByDataID
+        /**
+         * 유닛이 가지고있는 아이템을 땅에 떨어뜨립니다 (플레이어 유닛일 경우에만 동작합니다)
+         * @param dataID 
+         * @param [count] 
+         */
+        DropItemByDataID(dataID: number, count?: number): void
 
-        // EquipItem
+        /**
+         * 유닛이 인벤토리에 지니고 있는 아이템 중 하나를 장착하게 합니다 (플레이어 유닛일 경우에만 동작합니다)
+         * @param itemID 아이템의 고유 ID
+         * @param [forced] 강제여부
+         */
+        EquipItem(itemID: number, forced?: boolean): void
 
-        // GetAllRegistedPetData
+        /**
+         * 등록된 펫들의 데이터를 TOnlinePetData[] 형식으로 반환합니다.
+         * @returns 등록된 펫들의 데이터가 담긴 TOnlinePetData[] 형식 배열
+         */
+        GetAllRegistedPetData(): network.TOnlinePetData[]
 
-        // GetEquipItem
 
-        // GetRegistedPetDataByPetID
+        /**
+         * 유닛이 장착 중인 아이템의 정보를 가져옵니다 (플레이어 유닛일 경우에만 동작합니다)
+         * @param equipSlot 장착 슬롯 (0 ~ 9)
+         * @returns 아이템의 정보 (Titem 형식)
+         */
+        GetEquipItem(equipSlot: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 ): network.TItem
 
-        // GetRegistedPetID
+        /**
+         * 
+         * @param petID 등록된 펫의 데이터를 TOnlinePetData 형식으로 반환합니다.
+         * @returns 등록된 펫의 데이터가 담긴 .TOnlinePetData 형식
+         */
+        GetRegistedPetDataByPetID(petID: number): network.TOnlinePetData
 
-        // GetSingleSummonedPet
+        /**
+         * 등록된 펫의 ID를 가져옵니다
+         * @returns 등록된 펫들의 ID가 담긴 int[] 형식 배열
+         */
+        GetRegistedPetID(): number[]
 
-        // GetSkill
+        /**
+         * 소환되어있는 펫 유닛을 가져옵니다
+         * @returns 펫 유닛
+         */
+        GetSingleSummonedPet(): ScriptPetUnit
 
-        // GetSkillLevel
+        /**
+         * 유닛이 가진 스킬 정보를 가져옵니다 (플레이어 유닛일 경우에만 동작합니다)
+         * @param dataID 스킬 ID (데이터베이스)
+         * @returns skill 스킬 정보 객체(TSkill)
+         */
+        GetSkill(dataID: number): network.Tskill
 
-        // GetStat
+        /**
+         * 유닛이 가진 특정 스킬의 레벨을 가져옵니다 (플레이어 유닛일 경우에만 동작합니다)
+         * @param dataID 스킬 ID (데이터베이스)
+         * @returns skill level 스킬 레벨
+         */
+        GetSkillLevel(dataID: number): number
 
-        // GetStringVar
+        /**
+         * 유닛의 스탯 값을 스탯 Type을 이용해서 가져옵니다
+         * @param type 가져올 스탯의 스탯 타입(NekoStats)
+         * @returns stat 
+         */
+        GetStat(type: number): number
+
+        /**
+         * 이 플레이어 유닛의 변수 값을 가져온다. (문자열 형식)
+         * @param id 변수 ID
+         * @returns 해당 변수의 값
+         */
+        GetStringVar(id: number): string
         
         /**
          * 플레이어 유닛의 변수 값을 가져옵니다
-        */
+         * @param id 변수 ID
+         * @returns 해당 변수의 값
+         */
         GetVar (id: number): number
 
-        // HasBuff
+        /**
+         * 해당 유닛이 특정 ID의 상태를 가지고 있는지 체크합니다
+         * @param buffID 
+         * @returns true if buff 
+         */
+        HasBuff(buffID: number): boolean
 
-        // HasSkill
+        /**
+         * 유닛의 스킬 소유 여부를 체크합니다 (플레이어 유닛일 경우에만 동작합니다)
+         * @param dataID 
+         * @returns true if skill 
+         */
+        HasSkill(dataID: number): boolean
 
-        // IsCollectionCompleted
+        /**
+         * 유닛의 도감 완료 여부를 가져옵니다 (플레이어 유닛일 경우에만 동작합니다)
+         * @param collectionDataID 도감 ID (데이터베이스)
+         * @returns 완료 여부 (True/False)
+         */
+        IsCollectionCompleted(collectionDataID: number): boolean
 
-        // IsEquippedItem
+        /**
+         * 유닛의 특정 아이템 장착 여부를 가져옵니다 (플레이어 유닛일 경우에만 동작합니다)
+         * @param itemID 아이템의 고유 ID
+         * @returns 장착 여부 (True/False)
+         */
+        IsEquippedItem(itemID: number): boolean
 
-        // IsEquippedItemByDataID
+        /**
+         * 유닛의 특정 아이템 장착 여부를 가져옵니다 (플레이어 유닛일 경우에만 동작합니다)
+         * @param dataID 아이템 ID (데이터베이스)
+         * @returns 장착 여부 (True/False)
+         */
+        IsEquippedItemByDataID(dataID: number): boolean
 
-        // KnockbackFromUnit
+        /**
+         * 유닛에게 밀치기(넉백 Knock-back)를 적용합니다
+         * (밀친 대상의 유닛으로부터 멀어집니다)
+         * @param from 밀친 대상
+         * @param distance 적용 거리
+         * @param [time] 적용 시간 (짧을수록 빠르게 밀어냅니다) (기본값: 0.5)
+         */
+        KnockbackFromUnit(from: ServerScript.ScriptUnit, distance: number, time?: number): void
 
-        // LeaveField
+        /**
+         * 유닛이 접속해 있는 필드를 떠나게 합니다
+         */
+        LeaveField(): void
 
-        // MakeKnockback
+        /**
+         * 유닛을 밀쳐냅니다 (넉백)
+         * @param distance 적용 거리
+         * @param time 적용 시간 (짧을수록 빠르게 밀어냅니다)
+         */
+        MakeKnockback(distance: number, time: number): void
 
-        // MakeSturn
+        /**
+         * 유닛을 기절시킵니다 (스턴)
+         * @param time 적용 시간
+         */
+        MakeSturn(time: number): void
 
-        // PlayME
+        /**
+         * 해당 ME를 재생합니다.
+         * @param meID ME이름
+         * @param [volume] 볼륨
+         */
+        PlayME(meID: string, volume?: number): void
 
-        // PlaySE
+        /**
+         * 해당 SE를 재생합니다.
+         * @param seName SE 이름
+         * @param [volume] 볼륨
+         */
+        PlaySE(seName: string, volume?: number): void
 
-        // PullFromUnit
+        /**
+         * 유닛에게 당기기를 적용합니다.(당긴 대상 유닛에게 끌려갑니다)
+         * @param from 당긴 대상
+         * @param distance 간격 (0 일경우 완전히 내 위치까지 당겨집니다) (기본값: 0)
+         * @param [time] 적용 시간 (짧을수록 빠르게 당깁니다) (기본값: 0.5)
+         */
+        PullFromUnit(from: ServerScript.ScriptUnit, distance: number, time?: number): void
 
-        // RefreshStats
+        /**
+         * 유닛의 스탯을 다시 계산합니다
+         */
+        RefreshStats() :void
 
-        // RemoveAllSkills
+        /**
+         * 유닛의 모든 스킬을 제거합니다 (플레이어 유닛일 경우에만 동작합니다)
+         */
+        RemoveAllSkills(): void
 
-        // RemoveBuff
+        /**
+         * 해당 유닛의 상태를 제거합니다
+         * @param buffID 버프 ID
+         */
+        RemoveBuff(buffID: number): void
 
-        // RemoveCollection
+        /**
+         * 유닛의 도감을 삭제하고, 삭제에 성공했는지를 반환합니다 (플레이어 유닛일 경우에만 동작합니다)
+         * @param collectionDataID 도감 ID (데이터베이스)
+         * @returns 삭제 성공 여부 (True/False)
+         */
+        RemoveCollection(collectionDataID: number): boolean
 
-        // RemoveItem
+        /**
+         * 플레이어 유닛으로부터 아이템을 제거합니다
+         * @param dataID 제거할 아이템의 데이터베이스 아이템 ID
+         * @param [count] 제거할 아이템의 개수
+         * @param [notify] 아이템을 제거했을때 공지를 사용할 것인지를 나타냅니다
+         * @param [atomic] 이 인자가 활성화 되었을 때 제거할 아이템의 개수보다 가지고 있는 아이템의 개수가 적으면 False를 반환하고 함수를 종료합니다
+         * @param [equippedItemExclude] 장착 중인 아이템은 제거 대상에서 제외할지를 나타냅니다
+         * @returns 제거 성공 여부 (True/False)
+         */
+        RemoveItem(dataID: number, count?: number, notify?: boolean, atomic?: boolean, equippedItemExclude?: boolean): boolean
 
-        // RemoveItemByID
 
-        // RemoveSkill
+        /**
+         * 플레이어 유닛으로부터 아이템을 제거합니다
+         * @param id 제거할 아이템의 ID (데이터 베이스의 아이템 ID 가 아닌 해당 아이템의 유니크 ID 입니다)
+         * @param [count] 제거할 아이템의 개수
+         * @param [notify] 아이템을 제거했을때 공지를 사용할 것인지를 나타냅니다
+         * @param [atomic] 이 인자가 활성화 되었을 때 제거할 아이템의 개수보다 가지고 있는 아이템의 개수가 적으면 False를 반환하고 함수를 종료합니다
+         * @param [equippedItemExclude] 장착 중인 아이템은 제거 대상에서 제외할지를 나타냅니다
+         * @returns 제거 성공 여부 (True/False)
+         */
+        RemoveItemByID(id: number, count?: number, notify?: boolean, atomic?: boolean, equippedItemExclude?: boolean): boolean
 
-        // RespawnAt
+        /**
+         * 유닛의 특정 스킬을 제거합니다 (플레이어 유닛일 경우에만 동작합니다)
+         * @param dataID 스킬 ID (데이터베이스)
+         */
+        RemoveSkill(dataID: number): void
 
-        // Say
+        /**
+         * 유닛을 X, Y 위치에서 부활시킵니다
+         * @param x X 좌표
+         * @param y Y 좌표
+         */
+        RespawnAt(x: number, y: number): void
 
-        // SendCenterLabel
+        /**
+         * 유닛이 말하게 합니다
+         * @param text 대사
+         * @param color 텍스트 색 (기본: 검은색)
+         */
+        Say(text: string, color?: number): void
 
-        // SendSay
+        /**
+         * 해당 유닛에게 센터 라벨을 표시합니다
+         * @param text 라벨 내용
+         */
+        SendCenterLabel(text: string): void
 
-        // SendUpdated
+        /**
+         * 유닛에게 말하기 요청을 보냅니다 (대상 플레이어의 채팅창에만 대사가 보입니다)
+         * @param text 대사
+         * @param color 텍스트 색 (기본: 검은색)
+         */
+        SendSay(text: string, color: number): void
 
-        // SerVar
+        /**
+         * 유닛의 정보를 갱신합니다
+         * @param [fixPosition] 위치 수정
+         */
+        SendUpdated(fixPosition?: boolean): void
 
-        // SetJob
+        /**
+         * 이 플레이어 유닛의 변수 값을 설정합니다
+         * @param id 변수 ID
+         * @param value 변수값
+         */
+        SerVar(id: number, value: number): void
 
-        // SetPetUnit
+        /**
+         * 직업 변경
+         * @param jobID 직업 ID
+         * @param [keepSkills] 같은 스킬의 유지 여부 (기본:True)
+         */
+        SetJob(jobID: number, keepSkills?: boolean): void
 
-        // SetQuickSlot
+        /**
+         * 이 유닛의 펫 유닛을 설정합니다
+         * @param pet 대상 펫 유닛 객체
+         */
+        SetPetUnit(pet: ServerScript.ScriptUnit): void
 
-        // SetSkillLevel
+        /**
+         * 퀵 슬롯에 등록될 아이템 및 스킬을 설정합니다
+         * @param type 등록 타입 (0 : 빈 슬롯, 1 : 아이템, 2 : 스킬)
+         * @param slotID 슬롯 번호 (0 ~ 7)
+         * @param dataID 대상의 ID (데이터베이스)
+         */
+        SetQuickSlot(type: 0 | 1 | 2, slotID: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7, dataID: number): void
 
-        // SetStat
+        /**
+         * 유닛이 가진 특정 스킬의 레벨을 설정합니다 (플레이어 유닛일 경우에만 동작합니다)
+         * @param dataID 스킬 ID (데이터베이스)
+         * @param level 변경할 레벨
+         * @returns 성공 여부 (True/False)
+         */
+        SetSkillLevel(dataID: number, level: number): boolean
+    
 
-        // SetStringVar
+        /**
+         * 유닛의 스탯 값을 스탯 Type을 이용해서 설정합니다
+         * @param type 설정할 스탯의 스탯 타입(NekoStats)
+         * @param value 설정할 값
+         */
+        SetStat(type: number, value: number): void
 
-        // ShowAnimation
+        /**
+         * 이 플레이어 유닛의 변수 값을 설정합니다 (문자열 형식, 최대 65535 Bytes)
+         * @param id 변수 ID
+         * @param value 변수값
+         * @returns true if string var 
+         */
+        SetStringVar(id: number, value: string): boolean
 
-        // SpawnAt
+        /**
+         * 해당 유닛의 위치에 애니메이션을 재생합니다
+         * @param animationID 애니메이션 ID
+         */
+        ShowAnimation(animationID: number): void
 
-        // SpawnAtField
+        /**
+         * 유닛을 특정 위치로 소환합니다
+         * @param x X 좌표
+         * @param y Y 좌표
+         */
+        SpawnAt(x: number, y: number): void
 
-        // SpawnAtFieldID
+        /**
+         * 특정 필드(맵)의 X, Y 위치로 소환한다.
+         * @param field 소환할 대상 필드
+         * @param x X 좌표
+         * @param y Y 좌표
+         */
+        SpawnAtField(field : ServerScript.ScriptField, x: number, y: number): void
 
-        // SpawnPet
+        /**
+         * 필드의 ID를 이용해서 지정된 좌표에 유닛을 소환합니다.
+         * @param mapID 소환할 필드의 ID
+         * @param x X 좌표
+         * @param y Y 좌표
+         * @param [channelID] 소환할 위치의 채널 ID(기본값 : 0)
+         */
+        SpawnAtFieldID(mapID : number, x: number, y: number, channelID?: number): void
 
-        // StartGlobalEvent
+        /**
+         * 펫을 소환합니다. 같은 ID로 이미 펫이 소환되었던 경우 해당 펫의 정보로 소환됩니다 (플레이어 유닛일 경우에만 동작합니다)
+         * @param petID 소환할 펫의 ID
+         * @param posX 소환할 위치의 X 좌표
+         * @param posY 소환할 위치의 Y 좌표
+         * @param [characterID] 신규 등록시 펫의 캐릭터 ID (기본값: 0)
+         * @param [jobID] 신규 등록시 펫의 직업 ID (기본값: 0)
+         * @param [name] 신규 등록시 펫의 이름 (기본값: 데이터베이스-캐릭터의 이름)
+         * @returns 펫 소환 성공여부(성공: True, 실패: False)
+         */
+        SpawnPet(petID: number, posX: number, posY: number, characterID?: number, jobID?: number, name?: number): boolean
 
-        // StopAnimation
+        /**
+         * 유닛의 공용 이벤트를 시작합니다 (플레이어 유닛일 경우에만 동작합니다)
+         * @param id 공용 이벤트 ID
+         */
+        StartGlobalEvent(id: number): void
 
-        // UnequipItem
+        /**
+         * 해당 유닛이 재생 중이던 애니메이션을 중단합니다.
+         * @param animationID 애니메이션의 ID
+         */
+        StopAnimation(animationID: number): void
 
-        // UnregisterPet
+        /**
+         * 유닛이 장착 중인 아이템 중 하나를 장착 해제하게 합니다 (플레이어 유닛일 경우에만 동작합니다)
+         * @param itemID 아이템의 고유 ID
+         */
+        UnequipItem(itemID: number): void
 
-        // UseFatigue
+        /**
+         * 펫의 등록을 해제합니다
+         * @param petID 등록 해제 할 펫의 ID
+         */
+        UnregisterPet(petID: number): void
 
-        // UseGameMoney
+        /**
+         * 유닛의 피로도를 사용합니다 (플레이어 유닛일 경우에만 동작합니다)
+         * @param amount 사용할 양
+         * @returns true if fatigue 
+         */
+        UseFatigue(amount: number): boolean
+
+        /**
+         * 유닛의 게임 골드를 사용합니다 (플레이어 유닛일 경우에만 동작합니다)
+         * @param amount 사용할 양
+         * @returns true if game money 
+         */
+        UseGameMoney(amount: number): boolean
+    }
+
+        
+    /**
+     * 펫을 나타내는 스크립트 클래스입니다
+     * @noSelf
+     */
+     interface ScriptPetUnit extends ScriptUnit {
+
+
     }
 
     /**
