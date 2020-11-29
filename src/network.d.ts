@@ -2,14 +2,130 @@
 
 declare namespace network {
 
+    
+    /**
+     * 데이터베이스 애니매이션 정보
+    */
+    interface TGameAnimation {
+        commands: network.TGameAnimationCommand[]
+
+        imageID: number
+
+        l_name: string
+
+        name: string
+
+        persistentTeleport: boolean
+    }
+
+    
+    /**
+     * 애니메이션 커맨드
+    */
+    interface TGameAnimationCommand {
+        actionName: string
+
+        collisionAnimationID: number
+
+        collisionOffsetX: number
+
+        collisionOffsetY: number
+
+        collisionRadius: number
+
+        collisionWall: boolean
+
+        deleteOnCollision: boolean
+
+        directionSync: boolean
+
+        endColor: number
+
+        endScaleX: number
+
+        endScaleY: number
+
+        followUnit: true
+
+        gravityX: number
+
+        gravityY: number
+
+        includeEnemy: boolean
+
+        includeSameTeam: boolean
+
+        includeSelf: boolean
+
+        lifetime: number
+
+        maxCollisions: number
+
+        moveSpeedX: number
+
+        moveSpeedY: number
+
+        playCommonEventID: number
+
+        randomOffsetX: number
+
+        randomOffsetY: number
+
+        rotationByFront: number
+
+        rotationToDir: boolean
+
+        sortingBack: boolean
+
+        soundID: number
+
+        startColor: number
+
+        startDirOffsetX: number
+
+        startDirOffsetY: number
+
+        startOffsetX: number
+
+        startOffsetY: number
+
+        startScaleX: number
+
+        startScaleY: number
+
+        targetFlashColor: number
+
+        targetFlashTime: number
+
+        type: number
+    }
+
     /**
      * 케릭터의 데이터베이스 정보
     */
     abstract class TGameCharacter {
-        /**
-         * 케릭터의 이름
-        */
+
+        collision: boolean
+
+        footstepSoundID: number
+
+        imageID: number
+
+        jumpForce: boolean
+
+        l_name: string
+
+        memo: string
+
+        moveSpeed: number
+
         name: string
+
+        traits: network.TGameMapEventCommand[]
+
+        type: number
+
+        useCloudCharacter: boolean
     }
 
     
@@ -84,33 +200,77 @@ declare namespace network {
 
     }
 
-    /**
-     * 데이터베이스 애니매이션 정보
-    */
-    interface TGameAnimation {
-
-
-
-    }
 
     /**
      * 데이터베이스 버프정보
     */
     interface TGameBuff {
+        damageFormula: string
 
+        damageType: number
+
+        debuffCondition: number
+
+        debuffTime: number
+
+        desc: string
+
+        hasCritical: boolean
+
+        iconID: number
+
+        isRemoveBuff: boolean
+
+        l_desc: string
+
+        l_name: string
+
+        memo: string
+
+        name: string
+
+        oldTraits: network.TGameTrait
+
+        showAnimation: boolean
+
+        showAnimationID: number
+
+        tickTime: number
+
+        traits: network.TGameMapEventCommand
+
+        type: number
     }
 
+    
     /**
-     * 데이터베이스 케릭터정보
+     * 데이터베이스 도감정보
     */
-    interface TGameCharacter {
+    interface TGameCollection {
 
     }
+
 
     /**
      * 데이터베이스 공용이벤트 정보
     */
     interface TGameCommonEvent {
+
+        conditionSwitch1ID: number
+
+        l_name: string
+
+        name: string
+
+        /**
+         * 주의!! 네코랜드에서 참조시 에러 발생
+         */
+        page: network.TGameMapEventPage
+
+        startCondition: number
+
+        targetPlayerSelector: number[]
+
 
     }
 
@@ -121,12 +281,6 @@ declare namespace network {
 
     }
 
-    /**
-     * 데이터베이스 직업정보
-    */
-    interface TGameItem {
-
-    }
 
     /**
      * 데이터베이스 직업정보
@@ -208,7 +362,30 @@ declare namespace network {
 
     }
 
+        
+    /**
+     * 맵이벤트 커맨드(네코독에 없음)
+    */
+    interface TGameMapEventCommand {
+
+
+    }
+
+    /**
+     * 특성(네코독에 없음)
+    */
+    interface TGameTrait {
+
+
+    }
+
+    /**
+     * 맵이벤트 페이지(네코독에 없음)
+    */
+    interface TGameMapEventPage {
+
+
+    }
 
     
-
 }
