@@ -11,6 +11,7 @@ declare namespace ServerScript {
     /**
     * 스크립팅 오브젝트의 기본 클래스입니다.
     * 커스텀 데이터 수정이 가능합니다 (몬스터 AI 의 스크립팅 중 ai.customData.test = 1 와 같이 커스텀 변수의 사용이 가능합니다)
+    * @noSelf
     */
     interface ScriptObject {
         /**
@@ -21,6 +22,7 @@ declare namespace ServerScript {
 
     /**
     * 하나의 클랜에 대응하는 클래스입니다
+    * @noSelf
     */
     interface ScriptClan extends ScriptObject{
         /**
@@ -1560,8 +1562,58 @@ declare namespace ServerScript {
      * @noSelf
      */
      interface ScriptPetUnit extends ScriptUnit {
+        /**
+         * 펫 유닛의 데이터를 TGameCharacter 형식으로 얻어옵니다
+         */
+        characterData: network.TGameCharacter
 
+        /**
+         * 펫 유닛의 캐릭터 ID
+         */
+        characterID: number
 
+        /**
+         * 펫의 누적 경험치
+         */
+        cumulativeEXP: number
+
+        /**
+         * 펫의 현재 경험치
+         */
+        exp: number
+
+        /**
+         * 펫 유닛의 직업
+         */
+        job: number
+
+        /**
+         * 펫의 현재 레벨
+         */
+        level: number
+
+        /**
+         * 펫 유닛의 주인에게 등록된 ID
+         */
+        petID: number
+
+        /**
+         * 펫 유닛에게 경험치를 지급합니다
+         * @param amount 지급할 경험치의 양
+         */
+        AddEXP(amount: number): void
+
+        /**
+         * 펫의 레벨을 초기화합니다
+         */
+        ResetPetLevelEXP(): void
+
+        /**
+         * 펫의 직업을 설정합니다
+         * @param jobID 직업 ID
+         * @param [keepSkills] 같은 스킬 유지 여부 (기본: True)
+         */
+        SetJob(jobID: number, keepSkills?: boolean): void
     }
 
     /**
@@ -1841,30 +1893,361 @@ declare namespace ServerScript {
 
     /**
      * 한 파티에 대응하는 클래스입니다. 해당 파티의 정보를 얻거나 파티를 조작할 때 사용합니다
+     * @noSelf
      */
     interface ScriptParty {
+        /**
+         * 파티의 고유 ID
+         */
+        id: number
 
+        /**
+         * 파티 마스터의 ID
+         */
+        masterPlayerID: number
+
+        /**
+         * 파티의 최대 플레이어 
+         */
+        maxPlayer: number
+
+        /**
+         * 파티의 이름
+         */
+        name: string
+
+        /**
+         * 배열 형식의 파티 멤버 리스트
+         */
+        players: ServerScript.ScriptRoomPlayer[]
+
+        /**
+         * 파티를 해산합니다
+         */
+        Destroy(): void
+
+        // FIXME: 스테이터스 타입을 추가할지 interface의 keyof로 해야할지, enum으로 해야할지 고민..
+        /**
+         * 플레이어를 파티에 참가시킵니다
+         * @param player 참가할 플레이어
+         * @returns party 파티 참가 결과 값(StatusCode)
+         */
+        JoinParty(player: ServerScript.ScriptRoomPlayer): number
+
+        /**
+         * 
+         * @param player 퇴장시킬 플레이어
+         * @returns true if party 성공 여부 (성공:True, 실패:False)
+         */
+        KickParty(player: ServerScript.ScriptRoomPlayer): boolean
+
+        /**
+         * 
+         * @param player 내보낼 플레이어
+         * @returns 성공 여부 (성공:True, 실패:False)
+         */
+        LeaveParty(player: ServerScript.ScriptRoomPlayer): boolean
+
+        /**
+         * 파티 정보를 갱신합니다
+         */
+        SendUpdated(): void
     }
 
     /**
-     * 
+     * 펫의 AI 에 접근해 컨트롤 할 수 있는 클래스입니다
+     * @noSelf
      */
     interface ScriptPetUnitAI {
 
+        /**
+         * 지정된 거리 안에서 가장 가까운 아이템을 획득합니다
+         * @param dist 거리
+         * @returns 획득 여부
+         */
+        AcquireNearDropItem(dist: number): boolean
+
+        /**
+         * 플레이어 유닛에게 버프를 부여합니다
+         * @param buffID 상태 ID
+         */
+        AddMasterBuff(buffID: number): void
+
+        /**
+        * 두 유닛 사이의 거리를 계산해 반환합니다
+        * @param pos1X 1의 좌표 X
+        * @param pos1Y 1의 좌표 Y
+        * @param pos2X 2의 좌표 X
+        * @param pos2Y 2의 좌표 Y
+        * @returns 거리 
+        */
+        Distance(pos1X: number, pos1Y: number, pos2X: number, pos2Y: number): number
+
+
+        /**
+         * 두 유닛 사이의 거리를 계산해, 해당 값의 제곱값을 반환합니다
+         * @param pos1X 1의 좌표 X
+         * @param pos1Y 1의 좌표 Y
+         * @param pos2X 2의 좌표 X
+         * @param pos2Y 2의 좌표 Y
+         * @returns 거리의 제곱 
+         */
+        DistanceSquard(pos1X: number, pos1Y: number, pos2X: number, pos2Y: number): number
+ 
+        /**
+         * 현재 펫의 주인 유닛을 가져옵니다
+         * @returns 현재 펫의 주인
+         */
+        GetMasterUnit(): ServerScript.ScriptUnit
+        
+        /**
+         * 현재 몬스터의 타겟 유닛을 가져옵니다
+         * @returns 현재 타겟
+         */
+        GetTargetUnit(): ServerScript.ScriptUnit
+
+        /**
+         * 현재 몬스터의 타겟 ID를 가져옵니다
+         * @returns 타겟 유닛의 아이디
+         */
+        GetTargetUnitID(): number
+
+        /**
+         * 몬스터를 해당 위치로 이동시킵니다
+         * @param posX 이동할 위치 X
+         * @param posY 이동할 위치 Y
+         */
+        MoveToPosition(posX: number, posY: number): void
+
+        /**
+         * 플레이어 유닛을 따라다닐 것인지 설정합니다
+         * @param enable 여부 (따라다닌다:True, 따라다니지 않는다:False)
+         * @param [followDist] 펫과 주인이 얼마나 떨어져야 따라올 것인지 설정합니다
+         * @param [teleportDist] 펫과 주인이 얼마나 떨어져야 주인의 위치로 순간이동 할 것인지 설정합니다
+         */
+        setFollowMaster(enable: boolean, followDist?: number, teleportDist?: number): void
+
+        /**
+         * 타겟이 된 유닛을 따라다닐 것인지 설정합니다
+         * @param enable 활성화 여부 (활성화: True, 비활성화: False)
+         */
+        SetFollowTarget(enable: boolean): void
+
+        /**
+         * 몬스터의 최초 생성 위치를 변경합니다
+         * @param posX 생성할 위치 X
+         * @param posY 생성할 위치 Y
+         */
+        SetInitPos(posX: number, posY: number): void
+
+        /**
+         * 현재 몬스터가 있는 맵에서 가장 가까운 유닛을 타겟으로 지정합니다
+         * @param [findType] 탐색할 유닛 타입 (0: 플레이어, 1: 이벤트 유닛 , 2: 적)
+         * @param [dist] 탐색할 유닛 거리 (기본값: 200)
+         */
+        SetNearTarget(findType?: number, dist?: number): void
+
+        /**
+         * 몬스터의 타겟을 설정합니다
+         * @param unit 몬스터의 타겟이 될 유닛
+         */
+        SetTargetUnit(unit: ServerScript.ScriptUnit): void
+
+        /**
+         * 유닛의 ID로 타겟을 설정합니다
+         * @param unitID 몬스터의 타겟이 될 유닛의 ID
+         */
+        SetTargetUnitID(unitID: number): void
+
+        /**
+         * 이동하는 몬스터를 멈춥니다
+         */
+        StopMove(): void
+
+        /**
+         * 몬스터에게 스킬을 사용하게 합니다
+         * @param skillID 사용할 스킬 ID
+         * @param [dir] 스킬의 방향
+         * @param [pos] 스킬의 위치
+         */
+        UseSkill(skillID: number, dir?: ServerScript.ScriptPoint, pos?: ServerScript.ScriptPoint): void
+
+        /**
+         * 
+         * @param skillID 사용할 스킬 ID
+         * @param [dirPosition] 스킬의 방향
+         * @param [pos] 스킬의 위치
+         */
+        UseSkillToPosition(skillID: number, dirPosition?: ServerScript.ScriptPoint, pos?: ServerScript.ScriptPoint): void
     }
 
     /**
-     * 
+     * 몬스터의 AI 에 접근해 컨트롤 할 수 있는 클래스입니다
+     * @noSelf
      */
     interface ScriptEnemyUnitAI {
+        /**
+         * 몬스터의 최초 생성 위치 X
+         */
+        initPosX: number
 
+        /**
+         * 몬스터의 최초 생성 위치 Y
+         */
+        initPosY: number
+
+
+
+        /**
+         * 두 유닛 사이의 거리를 계산해 반환합니다
+         * @param pos1X 1의 좌표 X
+         * @param pos1Y 1의 좌표 Y
+         * @param pos2X 2의 좌표 X
+         * @param pos2Y 2의 좌표 Y
+         * @returns 거리 
+         */
+        Distance(pos1X: number, pos1Y: number, pos2X: number, pos2Y: number): number
+
+        /**
+         * 두 유닛 사이의 거리를 계산해, 해당 값의 제곱값을 반환합니다
+         * @param pos1X 1의 좌표 X
+         * @param pos1Y 1의 좌표 Y
+         * @param pos2X 2의 좌표 X
+         * @param pos2Y 2의 좌표 Y
+         * @returns 거리의 제곱 
+         */
+        DistanceSquard(pos1X: number, pos1Y: number, pos2X: number, pos2Y: number): number
+
+        /**
+         * 가장 최근에 공격한 유닛을 가져옵니다
+         * @returns 공격한 유닛
+         */
+        GetAttackedUnit(): ServerScript.ScriptUnit
+
+        /**
+         * 현재 몬스터의 타겟 유닛을 가져옵니다
+         * @returns 현재 타겟
+         */
+        GetTargetUnit(): ServerScript.ScriptUnit
+
+        /**
+         * 현재 몬스터의 타겟 ID를 가져옵니다
+         * @returns 타겟 유닛의 아이디
+         */
+        GetTargetUnitID(): number
+
+        /**
+         * 몬스터를 해당 위치로 이동시킵니다
+         * @param posX 이동할 위치 X
+         * @param posY 이동할 위치 Y
+         */
+        MoveToPosition(posX: number, posY: number): void
+
+        /**
+         * 타겟이 된 유닛을 따라다닐 것인지 설정합니다
+         * @param enable 활성화 여부 (활성화: True, 비활성화: False)
+         */
+        SetFollowTarget(enable: boolean): void
+
+        /**
+         * 몬스터의 최초 생성 위치를 변경합니다
+         * @param posX 생성할 위치 X
+         * @param posY 생성할 위치 Y
+         */
+        SetInitPos(posX: number, posY: number): void
+
+        /**
+         * 현재 몬스터가 있는 맵에서 가장 가까운 유닛을 타겟으로 지정합니다
+         * @param [findType] 탐색할 유닛 타입 (0: 플레이어, 1: 이벤트 유닛 , 2: 적)
+         * @param [dist] 탐색할 유닛 거리 (기본값: 200)
+         */
+        SetNearTarget(findType?: number, dist?: number): void
+
+        /**
+         * 몬스터의 타겟을 설정합니다
+         * @param unit 몬스터의 타겟이 될 유닛
+         */
+        SetTargetUnit(unit: ServerScript.ScriptUnit): void
+
+        /**
+         * 유닛의 ID로 타겟을 설정합니다
+         * @param unitID 몬스터의 타겟이 될 유닛의 ID
+         */
+        SetTargetUnitID(unitID: number): void
+
+        /**
+         * 이동하는 몬스터를 멈춥니다
+         */
+        StopMove(): void
+
+        /**
+         * 몬스터에게 스킬을 사용하게 합니다
+         * @param skillID 사용할 스킬 ID
+         * @param [dir] 스킬의 방향
+         * @param [pos] 스킬의 위치
+         */
+        UseSkill(skillID: number, dir?: ServerScript.ScriptPoint, pos?: ServerScript.ScriptPoint): void
+
+        /**
+         * 
+         * @param skillID 사용할 스킬 ID
+         * @param [dirPosition] 스킬의 방향
+         * @param [pos] 스킬의 위치
+         */
+        UseSkillToPosition(skillID: number, dirPosition?: ServerScript.ScriptPoint, pos?: ServerScript.ScriptPoint): void
     }
 
     /**
      * 필드에 드랍된 아이템에 대응하는 클래스입니다
+     * @noSelf
      */
     interface ScriptDropItem {
+        /**
+         * 떨어트린 유닛의 ID
+         */
+        dropUnitID: number
 
+        /**
+         * 소속한 필드
+         */
+        field: ServerScript.ScriptField
+
+        /**
+         * 아이템의 고유 ID
+         */
+        id: number
+
+        /**
+         * 소유한 유닛의 ID
+         */
+        ownerUnitID: number
+
+        /**
+         * 위치 X
+         */
+        posX: number
+
+        /**
+         * 위치 Y
+         */
+        posY: number
+
+        /**
+         * 아이템 정보
+         */
+        titem: network.TItem
+
+        /**
+         * 해당 아이템을 대상 유닛에게 획득시킵니다
+         * @param unit 아이템을 획득할 유닛 객체
+         * @returns 획득 시도 결과 (StatusCode: SUCCESS, FAILED, BAG_FULL)
+         */
+        Acquire(unit: ServerScript.ScriptUnit): number
+
+        /**
+         * 해당 필드를 떠납니다 (필드에서 아이템 삭제)
+         */
+        LeaveField(): void
     }
 
     /**
@@ -1893,6 +2276,21 @@ declare namespace ServerScript {
 
         (a: number, b: number, g: number, r: number): ScriptColor
     }
+
+    /**
+     * 사각형 영역 정보를 저장하는 클래스입니다
+     * @noSelf
+     */
+     interface ScriptRect {
+
+        height : number
+        width: number
+        x: number
+        y: number
+
+        (x: number, y: number, width: number, height: number): ScriptColor
+    }
+
     
 }
 

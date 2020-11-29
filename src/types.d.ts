@@ -9,3 +9,4 @@ type AiEvent = {
     AI_ATTACKED: 1,
     AI_DEAD: 2
 }
+
