@@ -229,7 +229,7 @@ declare namespace network {
 
         name: string
 
-        oldTraits: network.TGameTrait
+        oldTraits: network.TGameTrait[]
 
         showAnimation: boolean
 
@@ -237,7 +237,7 @@ declare namespace network {
 
         tickTime: number
 
-        traits: network.TGameMapEventCommand
+        traits: network.TGameMapEventCommand[]
 
         type: number
     }
@@ -247,7 +247,45 @@ declare namespace network {
      * 데이터베이스 도감정보
     */
     interface TGameCollection {
+        desc: string
 
+        iconID: number
+
+        itemCount1: number
+
+        itemCount2: number
+
+        itemCount3: number
+
+        itemCount4: number
+
+        itemID1: number
+
+        itemID2: number
+
+        itemID3: number
+
+        itemID4: number
+
+        l_desc: string
+
+        l_name: string
+
+        memo: string
+
+        name: string
+
+        rewardGameMoney: number
+
+        rewardItemCount1: number
+
+        rewardItemCount2: number
+
+        rewardItemID1: number
+
+        rewardItemID2: number
+
+        traits: network.TGameMapEventCommand
     }
 
 
@@ -275,10 +313,91 @@ declare namespace network {
     }
 
     /**
+     * 데이터베이스 드랍아이템 정보
+    */
+    interface TGameDropItem {
+        itemDataID: number
+
+        itemLevel: number
+
+        maxCount: number
+
+        minCount: number
+
+        percent: number
+
+    }
+
+    /**
      * 데이터베이스 아이템정보
     */
     interface TGameItem {
 
+        actionName: string
+
+        agility: number
+
+        animationID: number
+
+        attack: number
+
+        buyerPrice: number
+
+        canDrop: boolean
+
+        canExchangeTrade: boolean
+
+        canSell: boolean
+
+        canStorage: boolean
+
+        canTrade: boolean
+
+        coolTime: number
+
+        damageFormula: string
+
+        damageType: number
+
+        defense: number
+
+        desc: string
+
+        hasCritical: boolean
+
+        imageID: number
+
+        l_desc: string
+
+        l_name: string
+
+        lucky: number
+
+        magicAttack: number
+
+        magicDefense: number
+
+        maxCount: number
+
+        maxHP: number
+
+        maxMP: number
+
+        memo: string
+
+        name: string
+
+        notConsumed: boolean
+
+        oldTraits: network.TGameTrait[]
+
+        sellerPrice: number
+
+        spineImageID: number
+
+        traits: network.TGameMapEventCommand[]
+
+        type: number
     }
 
 
@@ -286,6 +405,43 @@ declare namespace network {
      * 데이터베이스 직업정보
     */
     interface TGameJob {
+        agilities: number[]
+
+        attacks: number[]
+
+        defenses: number[]
+
+        exps: number[]
+
+        l_name: string
+
+        learnSkills: network.Tskill[]
+
+        luckies: number[]
+
+        magicAttacks: number[]
+
+        magicDefenses : number[]
+
+        maxHPs: number[]
+
+        maxLevel : number
+
+        maxMPs: number[]
+
+        memo: string
+
+        name: string
+
+        oldTraits: network.TGameTrait[]
+
+        traits: network.TGameMapEventCommand[]
+    }
+
+    /**
+     * 데이터베이스 레이아웃 정보
+    */
+    interface TGameLayoutPage {
 
     }
 
@@ -300,6 +456,75 @@ declare namespace network {
      * 데이터베이스 몬스터정보
     */
     interface TGameMonster {
+        agility: number
+
+        attack: number
+
+        attackOffsetX: number
+
+        attackOffsetY: number
+
+        attackRange: number
+
+        attackTime: number
+
+        attackType: number
+
+        collision: boolean
+
+        collisionWithMap: boolean
+
+        consumeFatigue: number
+
+        defense: number
+
+        dropEXP: number
+
+        dropItems: network.TGameDropItem
+
+        dropMaxGameMoney: number
+
+        dropMinGameMoney: number
+
+        imageID: string
+
+        isDirectGiveItem: boolean
+
+        l_name: string
+
+        lucky: number
+
+        magicAttack: number
+
+        magicDefense: number
+
+        maxHP: number
+
+        maxLevel: number
+
+        maxMP: number
+
+        memo: string
+
+        minLevel: number
+
+        moveSpeed: number
+
+        moveStyle: number
+
+        name: string
+
+        respawnTime: number
+
+        teamTag: number
+
+        traits: network.TGameTrait[]
+    }
+
+    /**
+     * 데이터베이스 파노라마 정보
+    */
+    interface TGamePanorama {
 
     }
 
@@ -307,7 +532,7 @@ declare namespace network {
      * 데이터베이스 스킬정보
     */
     interface TGameSkill {
-
+        
     }
     /**
      * 데이터베이스 시스템용어정보
